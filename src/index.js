@@ -1,15 +1,27 @@
 import React from 'react';
+import { BrowserRouter,Route,Routes } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import "bootstrap/dist/css/bootstrap.min.css";
+//Componentes
+import Navbar from './components/NavBar/Navbar';
+import ClassesList from './components/Classes/ClassesList';
+import ClassForm from './components/Classes/ClassForm';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+  <BrowserRouter>
+   <Navbar/>
+    <div className="container my-4">
+      <Routes>
+        <Route path='/' element={<ClassesList/>}/>
+        <Route path='/classForm' element={<ClassForm/>}/>
+      </Routes>
+    </div>
+  </BrowserRouter>,
+  document.getElementById('root'));
+
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
