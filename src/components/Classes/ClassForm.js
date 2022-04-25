@@ -1,37 +1,70 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import * as ClassesServer from './ClassesServer';
 
 const ClassForm=()=>{
-const initialState={id:0,name:"",seccion:"",ciclo:"",codigoAcceso:""};
-const [clase, setClase] = useState(initialState);
-const navigate = useNavigate();
+    const initialState={id:0,name:"",seccion:"",ciclo:"",codigoAcceso:""};
+    const [clase, setClase] = useState(initialState);
+    const navigate = useNavigate();
+    const params= useParams();
 
+    //console.log(params);
 
-const handleInputChange=(e)=>{
-    //console.log(e.target.name);
-    //console.log(e.target.value);
-    setClase({...clase,[e.target.name]: e.target.value});
-};
+    const handleInputChange=(e)=>{
+        //console.log(e.target.name);
+        //console.log(e.target.value);
+        setClase({...clase,[e.target.name]: e.target.value});
+    };
 
-const handleSubmit = async (e)=>{
-    e.preventDefault();
-    try{
-        let res;
-        res =  await ClassesServer.registerClass(clase);
-        const data=await res.json();
-        if(data.message=="Success"){
-            setClase(initialState);
+    const handleSubmit = async (e)=>{
+        e.preventDefault();
+        try{
+            let res;
+            //estamos en modo de registro
+            if(!params.id){
+                res =  await ClassesServer.registerClass(clase);
+                const data=await res.json();
+                if(data.message==="Success"){
+                    setClase(initialState);
+                }
+            }else{
+                //modo update
+                await ClassesServer.updateClass(params.id, clase);
+            }
+            navigate('/');
+        }catch(error){
+            console.log(error);
         }
-        navigate('/');
-    }catch(error){
-        console.log(error);
+    };
+
+    const getClass=async(classId)=>{
+        try{
+            const res=await ClassesServer.getClass(classId);
+            const data = await res.json();
+            const {name, seccion, ciclo, codigoAcceso} = data.Clase;
+            setClase({name,seccion,ciclo,codigoAcceso});
+        }catch(error){
+            console.log(error);
+        }
     }
-};
+
+    useEffect(()=>{
+        if(params.id){
+            getClass(params.id);
+        }
+        // eslint-disable-next-line
+    },[]);
 
     return(
-        <div className="col-md-3 mx-auto">
-            <h2 className="mb-3 text-center ">Nueva Clase</h2>
+        <div className="col-md-4 mx-auto card card-body m-5">
+            {
+                params.id?(
+                    <h2 className="mb-3 text-center ">Actualizar Clase</h2>
+                ):(
+                    <h2 className="mb-3 text-center ">Agregar Clase</h2>
+                )
+            }
+            
         <form onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label  className="form-label">Nombre de la Materia</label>
@@ -50,8 +83,16 @@ const handleSubmit = async (e)=>{
                 <input type="text" name="codigoAcceso" value={clase.codigoAcceso} onChange={handleInputChange} className="form-control" minLength="2" maxLength="10" required/>
                 <div id="textlHelp">Máximo 10 caracteres, puedes utilizar numeros y letras</div>
             </div>
-            <div className="d-grid gap-2"> 
-                <button type="submit" className="btn btn-primary ">Agregar</button>
+            <div className="d-grid gap-2">
+                {
+                    //params.id es distinto de null hay que actualizar por que lleva un registro si no es uno nuevo 
+                    params.id?(
+                        <button type="submit" className="btn btn-primary ">Actualizar</button>
+                    ):(
+                        <button type="submit" className="btn btn-success ">registrar</button>
+                    )
+                }
+                
             </div>
         </form>
         </div>

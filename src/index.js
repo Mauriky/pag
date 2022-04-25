@@ -16,6 +16,7 @@ ReactDOM.render(
       <Routes>
         <Route path='/' element={<ClassesList/>}/>
         <Route path='/classForm' element={<ClassForm/>}/>
+        <Route path='/updateClass/:id' element={<ClassForm/>}/>
       </Routes>
     </div>
   </BrowserRouter>,

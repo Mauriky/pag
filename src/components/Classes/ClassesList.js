@@ -12,7 +12,7 @@ const ClassesList =()=>{
         try{
             const res = await ClassesServer.listClasses();
             const data=await res.json();
-            console.log(data);
+            //console.log(data);
             setClasses(data.classes);
             
         }catch(error){
@@ -27,11 +27,11 @@ const ClassesList =()=>{
     return (
         <div className="row">
             {clases.map(clase=>(
-                <ClassItem key={clase.id} clase={clase}/>
+                <ClassItem key={clase.id} clase={clase} listClasses={listClasses}/>
             ))}
         </div>
     );
 };
-//29:56
+
 
 export default ClassesList;
