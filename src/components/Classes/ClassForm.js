@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as ClassesServer from './ClassesServer';
 
+
 const ClassForm=()=>{
+    const Swal = require('sweetalert2');
     const initialState={id:0,name:"",seccion:"",ciclo:"",codigoAcceso:""};
     const [clase, setClase] = useState(initialState);
     const navigate = useNavigate();
@@ -16,6 +18,25 @@ const ClassForm=()=>{
         setClase({...clase,[e.target.name]: e.target.value});
     };
 
+    const mostrarAlertaAgregar=()=>{
+        Swal.fire({
+            icon: 'success',
+            title: 'El registro ha sido guardado Exitosamente',
+            showConfirmButton: false,
+            timer: 2100
+          })
+    };
+
+    const mostrarAlertaModificar=()=>{
+        Swal.fire({
+            icon: 'success',
+            title: 'El registro ha sido modificado',
+            showConfirmButton: false,
+            timer: 2100
+          })
+    };
+
+
     const handleSubmit = async (e)=>{
         e.preventDefault();
         try{
@@ -25,11 +46,13 @@ const ClassForm=()=>{
                 res =  await ClassesServer.registerClass(clase);
                 const data=await res.json();
                 if(data.message==="Success"){
-                    setClase(initialState);
+                    setClase(initialState); 
                 }
+                mostrarAlertaAgregar();
             }else{
                 //modo update
                 await ClassesServer.updateClass(params.id, clase);
+                mostrarAlertaModificar();
             }
             navigate('/');
         }catch(error){
@@ -89,7 +112,7 @@ const ClassForm=()=>{
                     params.id?(
                         <button type="submit" className="btn btn-primary ">Actualizar</button>
                     ):(
-                        <button type="submit" className="btn btn-success ">registrar</button>
+                        <button type="submit"  className="btn btn-success ">registrar</button>
                     )
                 }
                 
